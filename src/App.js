@@ -1,43 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { FiChevronRight, FiChevronLeft } from 'react-icons/fi';
-import { FaQuoteRight } from 'react-icons/fa';
-import data from './data';
-import people from './data';
+import React, { useState } from 'react'
+import SingleColor from './SingleColor'
+
+import Values from 'values.js'
+
 function App() {
-
-  const [people,setPeople]=useState(data)
-  const[value,setValue]=useState(0)
-
-
-
-  return <section className="section">
-          <div className="title">
-            <h2>
-              <span>/</span>reviews
-            </h2>
-            </div> 
-           <div className="section-center">
-             {people.map((person,index)=>{
-               const{id,image,name,title,quote}=person
-             return   <article className={index===value?`activeSlide`:index===value-1?'lastSlide':'nextSlide'} key={id} >
-               <img src={image} alt={name} className="person-img"/>
-               <h4>{name}</h4>
-               <p className="title">{title}</p>
-               <p className="text">{quote}</p>
-               <FaQuoteRight className='icon'/>
-             </article> 
-
-              })}
-            <button onClick={()=>{value===0?setValue(people.length-1): setValue(value-1)}} className="prev">
-              <FiChevronLeft/>
-              </button> 
-              <button onClick={()=>{value===people.length-1?setValue(0): setValue(value+1)}}className="next">
-              <FiChevronRight/>
-              </button> 
-           </div>
-        </section>
-      
-     
+  const[color,setcolor]=useState('')
+  const[error,setError]=useState(false)
+  const[list,setList]=useState(new Values('#ffff10').all(10))
+  const handleSubmit=(e)=>{
+    e.preventDefault()
+    try{
+      let colors=new Values(color).all(10)
+      // console.log('erdal')
+      setList(colors)
+      setError(false)
+      setcolor('')
+    }
+    catch(error){
+      setError(true)
+      console.log(error)
+      setcolor('')
+    }
+  }
+  const addToClipBoard=(param)=>{
+    setcolor(param)
+  }
+  
+  return <>
+    <section className="container">
+    <h3>color generator</h3>
+    <form onSubmit={handleSubmit}>
+      <input className={`${error&&'error'||null}`}type="text" name="" onChange={(e)=>{setcolor(e.target.value)}} value={color} placeholder='#ffff10'/>
+      <button type="submit" className='btn' >Submit</button>
+    </form>
+    </section>
+    <section className="color">
+      <h4>List goes here</h4>
+    </section>
+    <section className="colors">
+      {list.map((color,index)=>{
+        return  <SingleColor addToClipBoard={addToClipBoard} key={index}  {...color} index={index} />
+      })}
+    </section>
+  
+  </>
 }
 
-export default App;
+export default App
